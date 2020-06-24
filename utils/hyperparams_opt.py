@@ -159,7 +159,13 @@ def sample_ppo2_params(trial):
     ent_coef = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
     cliprange = trial.suggest_categorical('cliprange', [0.1, 0.2, 0.3, 0.4])
     noptepochs = trial.suggest_categorical('noptepochs', [1, 5, 10, 20, 30, 50])
-    lam = trial.suggest_categorical('lambda', [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
+    lam = trial.suggest_categorical('lamdba', [0.8, 0.9, 0.92, 0.95, 0.98, 0.99, 1.0])
+    net_arch = trial.suggest_categorical('net_arch', ['small', 'medium', 'large'])
+    net_arch = {
+        'small': [dict(pi=[64, 64], vf=[64, 64])],
+        'medium': [dict(pi=[128, 128], vf=[128, 128])],
+        'large': [dict(pi=[256, 256], vf=[256, 256])],
+    }[net_arch]
 
     if n_steps < batch_size:
         nminibatches = 1
@@ -174,9 +180,9 @@ def sample_ppo2_params(trial):
         'ent_coef': ent_coef,
         'cliprange': cliprange,
         'noptepochs': noptepochs,
-        'lam': lam
+        'lam': lam,
+        'policy_kwargs': dict(net_arch=net_arch)
     }
-
 
 def sample_a2c_params(trial):
     """
