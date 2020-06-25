@@ -9,8 +9,9 @@ from pprint import pprint
 from collections import OrderedDict
 
 # numpy warnings because of tensorflow
-warnings.filterwarnings("ignore", category=FutureWarning, module='tensorflow')
-warnings.filterwarnings("ignore", category=UserWarning, module='gym')
+# warnings.filterwarnings("ignore", category=FutureWarning, module='tensorflow')
+# warnings.filterwarnings("ignore", category=UserWarning, module='gym')
+import utils.hide_stablebaselines_warnings
 
 import gym
 import numpy as np
