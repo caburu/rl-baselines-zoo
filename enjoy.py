@@ -7,7 +7,7 @@ import warnings
 # numpy warnings because of tensorflow
 # warnings.filterwarnings("ignore", category=FutureWarning, module='tensorflow')
 # warnings.filterwarnings("ignore", category=UserWarning, module='gym')
-import utils.hide_stablebaselines_warnings
+import hide_stablebaselines_warnings
 
 import gym
 import utils.import_envs  # pytype: disable=import-error
@@ -152,7 +152,8 @@ def main():
                     print("Success?", infos[0].get('is_success', False))
                 # Alternatively, you can add a check to wait for the end of the episode
                 # if done:
-                obs = env.reset()
+                # Comentado para evitar duplo reset por episódio (https://github.com/araffin/rl-baselines-zoo/issues/90)
+                # obs = env.reset() 
                 if args.algo == 'her':
                     successes.append(infos[0].get('is_success', False))
                     episode_reward, ep_len = 0.0, 0
