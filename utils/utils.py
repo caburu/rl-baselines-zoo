@@ -243,7 +243,13 @@ def create_test_env(env_id, n_envs=1, is_atari=False,
             env = VecNormalize(env, training=False, **hyperparams['normalize_kwargs'])
 
             if os.path.exists(os.path.join(stats_path, 'vecnormalize.pkl')):
-                env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env)
+                # Alteração feita aqui: 
+                # - Um novo VecNormalize é criado e antes se passava o VecNormalize (`env`) que acabou de
+                #   ser criado acima. Isso causa problemas se os estados originais tiverem valores 
+                #   fora da faixa [-10,10] e a normalização de estados estiver sendo utilizada.
+                # - Agora o VecNormalize abaixo é criado com o ambiente interno ao VecNormalize anterior,
+                #   ou seja, `env.venv`
+                env = VecNormalize.load(os.path.join(stats_path, 'vecnormalize.pkl'), env.venv)
                 # Deactivate training and reward normalization
                 env.training = False
                 env.norm_reward = False
