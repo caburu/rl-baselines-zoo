@@ -39,6 +39,8 @@ from utils.callbacks import SaveVecNormalizeCallback
 from utils.noise import LinearNormalActionNoise
 from utils.utils import StoreDict
 
+from julio.BestModelCheckpointCallback import BestModelCheckPointCallback
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -57,6 +59,8 @@ if __name__ == '__main__':
     parser.add_argument('--eval-episodes', help='Number of episodes to use for evaluation',
                         default=5, type=int)
     parser.add_argument('--save-freq', help='Save the model every n steps (if negative, no checkpoint)',
+                        default=-1, type=int)
+    parser.add_argument('--copy-bestmodel-freq', help='Copy the best model so far every n steps (if negative, no checkpoint)',
                         default=-1, type=int)
     parser.add_argument('-f', '--log-folder', help='Log folder', type=str, default='logs')
     parser.add_argument('--seed', help='Random generator seed', type=int, default=0)
@@ -223,6 +227,16 @@ if __name__ == '__main__':
         args.save_freq = max(args.save_freq // n_envs, 1)
         callbacks.append(CheckpointCallback(save_freq=args.save_freq,
                                             save_path=save_path, name_prefix='rl_model', verbose=1))
+
+    if args.copy_bestmodel_freq > 0:
+        # Account for the number of parallel environments
+        args.copy_bestmodel_freq = max(args.copy_bestmodel_freq // n_envs, 1)
+        
+        callbacks.append(BestModelCheckPointCallback(save_freq=args.copy_bestmodel_freq,
+                                                     best_model_path=save_path,
+                                                     vecnormalize_path=params_path,
+                                                     copy_path=os.path.join(save_path, 'best_models')))
+
 
     env_kwargs = {} if args.env_kwargs is None else args.env_kwargs
 
